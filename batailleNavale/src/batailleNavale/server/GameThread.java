@@ -98,7 +98,7 @@ public class GameThread extends Thread{
 			}else{ // loupé
 				display(shooter, "Tir loupé : " + coord);
 				display(target, "L'adversaire à loupé son tir : " + coord);
-				game.shotResult(shooter, coord, true);
+				game.shotResult(shooter, coord, false);
 				return true;
 			}
 		}
