@@ -112,8 +112,8 @@ public class GameThread extends Thread{
 	 * @param shooter
 	 */
 	private void shootingPhase(BufferedReader shooterIn, PrintWriter shooterOut, int shooter, int target, PrintWriter targetOut) {
-		shooterOut.println("Case cible : ");
-		targetOut.println("L'adversaire est en train de tirer...");
+		shooterOut.println("\n--- Votre tour ---\nCase cible : ");
+		targetOut.println("\n--- Tour adverse ---\nL'adversaire est en train de tirer...");
 		String targetedCell;
 		try {
 			do {

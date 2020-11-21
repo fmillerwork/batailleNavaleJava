@@ -34,7 +34,13 @@ public class BoatPlacingThread extends Thread{
 				//Choix du bateau
 				out.println("\nNuméro du bateau : ");
 				String boatIndexStr = in.readLine();
-				while(!game.unPlacedBoats(player).containsKey(Integer.parseInt(boatIndexStr))) { // CHECK IS NUMERIC
+				
+				while(!Utils.isNumeric(boatIndexStr)) {
+					out.println("Entrer un bon numéro : ");
+					boatIndexStr = in.readLine();
+				}
+				
+				while(!game.unPlacedBoats(player).containsKey(Integer.parseInt(boatIndexStr))) { 
 					out.println("Mauvais numéro ! Entrer un autre numéro : ");
 					boatIndexStr = in.readLine();
 				}
@@ -70,8 +76,12 @@ public class BoatPlacingThread extends Thread{
 			//Direction
 			out.println("Direction (1 => droite | -1 => bas) : ");
 			String directionStr = in.readLine();
+			while(!Utils.isNumeric(directionStr)) {
+				out.println("Entrer 1 (droite) ou -1 (bas) : ");
+				directionStr = in.readLine();
+			}
 			while(Integer.parseInt(directionStr) != 1 && Integer.parseInt(directionStr) != -1) { // CHANGER LE CHECK == NULL
-				out.println("Cette direction n'existe pas.... Entrer une nouvelle direction (1 ou -1): ");
+				out.println("Entrer 1 (droite) ou -1 (bas) : ");
 				directionStr = in.readLine();
 			}
 			direction  = Integer.parseInt(directionStr);

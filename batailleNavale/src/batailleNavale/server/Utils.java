@@ -24,7 +24,24 @@ public abstract class Utils {
 	 * @return isCoordValid
 	 */
 	public static boolean isValidCoord(String coord) {
-		int[] originCoord = strCoordToIntCoord(coord);
-		return originCoord[0] >= 0 && originCoord[0] <= 9 && originCoord[1] >= 0 && originCoord[1] <= 9;
+		if(coord.length() > 1 && coord.length() < 4) {
+			int[] originCoord = strCoordToIntCoord(coord);
+			return originCoord[0] >= 0 && originCoord[0] <= 9 && originCoord[1] >= 0 && originCoord[1] <= 9;
+		}
+		return false;
+	}
+	
+	/**
+	 * Retourne true si le paramètre string est un entier.
+	 * @param string
+	 * @return isNumeric
+	 */
+	public static boolean isNumeric(String string) {
+		try {
+			int nb = Integer.parseInt(string);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }
