@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class Player {
 	private int[][] playerBoard = new int[10][10]; // tableau de jeu en 10 x 10. ligne x colonne | 0 => case vide | 1 => bateau non touché | -1 => bateau touché | -2 bateau coulé
-	private int[][] opponentBoard = new int[10][10]; //ligne x colonne | 0 => case vide | 1 => bateau touché | -1 => tir loupé | -2 bateau coulé
+	private int[][] opponentBoard = new int[10][10]; //ligne x colonne | 0 => case vide | 1 => bateau touché | -1 => tir loupé
 	private Boat[] boats = new Boat[5];
 	
 	public Player() {
@@ -61,15 +61,14 @@ public class Player {
 	
 	
 	/**
-	 * Ajuste le tableau de l'adversaire (tableau de tir) en fonction du résultat du tir (touché non coulé = 1, loupé = -1, touché coulé = -2 )
+	 * Ajuste le tableau de l'adversaire (tableau de tir) en fonction du résultat du tir (touché ou loupé)
 	 * @param coord
-	 * @param result
+	 * @param isShot
 	 */
-	public void shotResult(String coord, int result) {
+	public void shotResult(String coord, boolean isShot) {
 		int[] shootCoord = Utils.strCoordToIntCoord(coord);
-		if(result == 1) opponentBoard[shootCoord[0]][shootCoord[1]] = 1; // touché non coulé
-		if(result == -1)  opponentBoard[shootCoord[0]][shootCoord[1]] = -1; //tir loupé
-		else opponentBoard[shootCoord[0]][shootCoord[1]] = -2; //touché coulé
+		if(isShot) opponentBoard[shootCoord[0]][shootCoord[1]] = 1; // touché
+		else  opponentBoard[shootCoord[0]][shootCoord[1]] = -1; //tir loupé
 	}
 	
 	/**
@@ -203,7 +202,7 @@ public class Player {
 			if(boats[boatIndex].getSize() + originCoordInt[1] > 10) { // si le bateau dépasse la grille
 				return false;}
 			for (int i = originCoordInt[1]; i < boats[boatIndex].getSize() + originCoordInt[1]; i++) {
-				if (playerBoard[originCoordInt[0]][i] != 0) { // la case est vide
+				if (playerBoard[originCoordInt[0]][i] != 0 && !isNotAdjacent2Boat(originCoordInt)) { // la case est vide
 					return false;
 				}
 			}
@@ -211,16 +210,32 @@ public class Player {
 			if(boats[boatIndex].getSize() + originCoordInt[0] > 10)
 				return false;
 			for (int i = originCoordInt[0]; i < boats[boatIndex].getSize() + originCoordInt[0]; i++) {
-				if (playerBoard[i][originCoordInt[1]] != 0) {
+				if (playerBoard[i][originCoordInt[1]] != 0 && !isNotAdjacent2Boat(originCoordInt)) {
 					return false;
 				}
 			}
 		}
 		return true;
 	}
+	
+	/**
+	 * Retourne true si la celulle en paramètre n'est adjacente à aucun autre bateau (dans les 8 cases autour).
+	 * @param coord
+	 * @return isAdjacent2Boat
+	 */
+	private boolean isNotAdjacent2Boat(int[] coord) {
+		return playerBoard[coord[0]-1][coord[1]] ==0 && 
+				playerBoard[coord[0]+1][coord[1]] ==0 &&
+				playerBoard[coord[0]][coord[1]-1] ==0 && 
+				playerBoard[coord[0]][coord[1]+1] ==0 &&
+				playerBoard[coord[0]-1][coord[1]-1] ==0 &&
+				playerBoard[coord[0]-1][coord[1]+1] ==0 &&
+				playerBoard[coord[0]+1][coord[1]-1] ==0 &&
+				playerBoard[coord[0]+1][coord[1]+1] ==0;
+	}
 
 	/**
-	 * Place le beateau correspondant dans la grille.
+	 * Place le bateau correspondant dans la grille.
 	 * @param boatIndex
 	 * @param playerBoard
 	 * @param originCoord

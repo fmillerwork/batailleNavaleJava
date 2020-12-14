@@ -16,11 +16,11 @@ public class Game {
 	 * Ajuste le tableau de l'adversaire du shooter en paramètre, en fonction du résultat du tir (touché ou loupé)
 	 * @param shooter
 	 * @param coord
-	 * @param result
+	 * @param isShot
 	 */
-	public void shotResult(int shooter, String coord, int result) {
-		if(shooter == 1) p1.shotResult(coord, result);
-		else p2.shotResult(coord, result);
+	public void shotResult(int shooter, String coord, boolean isShot) {
+		if(shooter == 1) p1.shotResult(coord, isShot);
+		else p2.shotResult(coord, isShot);
 	}
 
 	/**
@@ -70,10 +70,10 @@ public class Game {
 	 */
 	private boolean isTargetShot(Player target, Player shooter, String coord) {
 		if(target.isShot(coord)) { // touché
-			shooter.shotResult(coord, 1);
+			shooter.shotResult(coord, true);
 			return true;
 		}else { // loupé
-			shooter.shotResult(coord, -1);
+			shooter.shotResult(coord, false);
 			return false;
 		}
 	}

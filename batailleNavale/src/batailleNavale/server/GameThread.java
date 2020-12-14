@@ -28,8 +28,6 @@ public class GameThread extends Thread{
 
 	public void run() {
 		try {
-			
-			
 			out1.println("----- Début de la partie -----\nVous êtes le joueur 1");
 			out2.println("----- Début de la partie -----\nVous êtes le joueur 2");
 			
@@ -57,7 +55,7 @@ public class GameThread extends Thread{
 			endMessage();
 			
 		} catch (Exception e) {
-			
+			out1.println("Connexion perdue...");
 		}
 	}
 	
@@ -93,7 +91,7 @@ public class GameThread extends Thread{
 			if(game.isShot(target, coord)) { // touché
 				display(shooter, "Adversaire touché : " + coord);
 				display(target, "Vous êtes touché : " + coord);
-				game.shotResult(shooter, coord, 1);
+				game.shotResult(shooter, coord, true);
 				
 				String sunkBoatName = game.isSunk(target, coord);
 				if(sunkBoatName != null) { // coulé
@@ -104,7 +102,7 @@ public class GameThread extends Thread{
 			}else{ // loupé
 				display(shooter, "Tir loupé : " + coord);
 				display(target, "L'adversaire à loupé son tir : " + coord);
-				game.shotResult(shooter, coord, -1);
+				game.shotResult(shooter, coord, false);
 				return true;
 			}
 		}
@@ -152,9 +150,24 @@ public class GameThread extends Thread{
 		if(game.isFirstPlayerActive()) { // Joueur 2 gagnant
 			out1.println("Vous avez perdu ...");
 			out2.println("Vous avez gagné !");
+			
+			//Fermeture de la partie
+			gameClose();
 		}else { // Joueur 1 gagnant
 			out1.println("Vous avez gagné !");
 			out2.println("Vous avez perdu ...");
+			
+			//Fermeture de la partie
+			gameClose();
 		}
+	}
+	
+	/**
+	 * Fermeture de la partie
+	 */
+	private void gameClose() {
+		String gameCloseMessage = "Fin de la partie... (Entrer pour quitter l'application)";
+		out1.println(gameCloseMessage);
+		out2.println(gameCloseMessage);
 	}
 }
