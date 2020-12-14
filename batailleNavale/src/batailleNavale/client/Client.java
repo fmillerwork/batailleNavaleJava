@@ -1,7 +1,5 @@
 package batailleNavale.client;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
@@ -12,6 +10,7 @@ public class Client {
 		try {
 			Socket serv = new Socket("localhost", 1500);
 			PrintWriter out = new PrintWriter(serv.getOutputStream(), true);
+			@SuppressWarnings("resource")
 			Scanner sc = new Scanner(System.in);
 			new ListeningThread(serv).start();
 			System.out.println("Connexion réussie ! En attente d'un adversaire...");
@@ -19,6 +18,7 @@ public class Client {
 			while (true) {
 				out.println(sc.nextLine());
 			}
+			
 			
 			
 		}catch (Exception e) {

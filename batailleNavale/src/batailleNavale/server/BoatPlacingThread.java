@@ -35,13 +35,8 @@ public class BoatPlacingThread extends Thread{
 				out.println("\nNuméro du bateau : ");
 				String boatIndexStr = in.readLine();
 				
-				while(!Utils.isNumeric(boatIndexStr)) {
+				while(!Utils.isNumeric(boatIndexStr) || !game.unPlacedBoats(player).containsKey(Integer.parseInt(boatIndexStr))) {	// n'est pas un entier ou le numéro entrée ne correspond pas à un bateau non placé
 					out.println("Entrer un bon numéro : ");
-					boatIndexStr = in.readLine();
-				}
-				
-				while(!game.unPlacedBoats(player).containsKey(Integer.parseInt(boatIndexStr))) { 
-					out.println("Mauvais numéro ! Entrer un autre numéro : ");
 					boatIndexStr = in.readLine();
 				}
 				int boatIndex = Integer.parseInt(boatIndexStr);
@@ -74,17 +69,19 @@ public class BoatPlacingThread extends Thread{
 			}
 		
 			//Direction
-			out.println("Direction (1 => droite | -1 => bas) : ");
+			out.println("Direction (H => horizontal | V => vertical) : ");
 			String directionStr = in.readLine();
 			while(!Utils.isNumeric(directionStr)) {
-				out.println("Entrer 1 (droite) ou -1 (bas) : ");
+				out.println("Entrer H (horizontal) ou V (vertical) : ");
 				directionStr = in.readLine();
 			}
-			while(Integer.parseInt(directionStr) != 1 && Integer.parseInt(directionStr) != -1) { // CHANGER LE CHECK == NULL
-				out.println("Entrer 1 (droite) ou -1 (bas) : ");
+			while(!directionStr.equals("H") && !directionStr.equals("V")) {
+				out.println("Entrer H (horizontal) ou V (vertical) : ");
 				directionStr = in.readLine();
 			}
-			direction  = Integer.parseInt(directionStr);
+			if(directionStr.equals("H")) direction  = 1;
+			else direction = -1; // vertical
+			
 		}catch (Exception e) {
 			// TODO: handle exception
 		}

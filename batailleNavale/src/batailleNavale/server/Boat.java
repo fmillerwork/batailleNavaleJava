@@ -6,7 +6,9 @@ public class Boat {
 	int size;
 	int HP;
 	boolean placed = false;
-	int[][] coord;
+	int[][] coord; // [i][j] => dimension i => nombre de coords et dimension j => coordonnées.
+				   // coord[0][0] => ligne coord 1 | coord[0][1] => col coord 1
+	 			   // coord[1][0] => ligne coord 2 | coord[1][1] => col coord 2
 	
 	
 	public Boat(String nom, int size) {
@@ -16,11 +18,6 @@ public class Boat {
 		this.HP = size;
 	}
 	
-	
-	
-	
-	
-
 	
 	
 	/**

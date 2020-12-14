@@ -7,6 +7,7 @@ public class Server {
 	
 	public static void main(String[] args) {
 		try {
+			@SuppressWarnings("resource")
 			ServerSocket listen = new ServerSocket(1500);
 			System.out.println("Serveur lancé !");
 				while(true) {

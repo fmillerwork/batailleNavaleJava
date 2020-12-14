@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 public class Game {
-	//private boolean currentTurn = true; // true => j1, false => j2
 	private Player p1 = new Player();
 	private Player p2 = new Player();
 	private int activePlayer = 1; // 1 => j1 actif | 2 => j2 actif
@@ -20,7 +19,7 @@ public class Game {
 	 * @param coord
 	 * @param result
 	 */
-	public void shotResult(int shooter, String coord, boolean result) {
+	public void shotResult(int shooter, String coord, int result) {
 		if(shooter == 1) p1.shotResult(coord, result);
 		else p2.shotResult(coord, result);
 	}
@@ -49,6 +48,21 @@ public class Game {
 	}
 	
 	/**
+	 * Retourne le nom du navire si ce dernier est coulé et actualise la grille du joueur target. Retourne null sinon.
+	 * @param target
+	 * @param coord
+	 * @return isSunk
+	 */
+	public String isSunk(int target, String coord) {
+		if(target == 1) {
+			return isTargetSunk(p1, p2, coord);
+		}
+		else { // joueur 2 ciblé
+			return isTargetSunk(p2, p1, coord);
+		}
+	}
+	
+	/**
 	 * Retourne true si la joueur cible à touché le joueur target. Retourne false sinon. 
 	 * @param target
 	 * @param shooter
@@ -57,14 +71,29 @@ public class Game {
 	 */
 	private boolean isTargetShot(Player target, Player shooter, String coord) {
 		if(target.isShot(coord)) { // touché
-			shooter.shotResult(coord, true);
+			shooter.shotResult(coord, 1);
 			return true;
 		}else { // loupé
-			shooter.shotResult(coord, false);
+			shooter.shotResult(coord, -1);
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Retourne le nom du navire coulé et actualise la grille si le joueur cible à coulé le navire du joueur target. Retourne null sinon. 
+	 * @param target
+	 * @param shooter
+	 * @param coord
+	 * @return isSunk
+	 */
+	private String isTargetSunk(Player target, Player shooter, String coord) {
+		String sunkBoatName = target.isSunk(coord);
+		if(sunkBoatName != null) { // coulé
+			return sunkBoatName;
+		}else { // non coulé
+			return null;
+		}
+	}
 	/**
 	 * Retourne true si la coordonnée est valide (case vide) pour joueur tireur en paramètre
 	 * @param player

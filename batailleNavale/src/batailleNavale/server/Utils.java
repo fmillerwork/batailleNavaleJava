@@ -4,7 +4,7 @@ public abstract class Utils {
 
 	
 	/**
-	 * Renvoi la coordonnée String passée en paramètre sous forme int
+	 * Renvoi la coordonnée String passée en paramètre sous forme int. Ex : "A5" => [0,4]
 	 * 
 	 * @param strCoord
 	 * @return intCoord
@@ -14,7 +14,7 @@ public abstract class Utils {
 		intCoord[0] = strCoord.toCharArray()[0] - 65; // code ASCII de A => 65, B => 66
 		intCoord[1] = Integer.parseInt(strCoord.substring(1)) - 1;
 		
-		// Exemple : A7 => [0,6], J10 => [9,9]
+		// Exemple : "A7" => [0,6], "J10" => [9,9]
 		return intCoord; 
 	}
 	

@@ -57,7 +57,7 @@ public class GameThread extends Thread{
 			endMessage();
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			
 		}
 	}
 	
@@ -93,12 +93,18 @@ public class GameThread extends Thread{
 			if(game.isShot(target, coord)) { // touché
 				display(shooter, "Adversaire touché : " + coord);
 				display(target, "Vous êtes touché : " + coord);
-				game.shotResult(shooter, coord, true);
+				game.shotResult(shooter, coord, 1);
+				
+				String sunkBoatName = game.isSunk(target, coord);
+				if(sunkBoatName != null) { // coulé
+					display(shooter, sunkBoatName + " coulé !");
+					display(target, "Votre "+ sunkBoatName + " est coulé...");
+				}
 				return true;
 			}else{ // loupé
 				display(shooter, "Tir loupé : " + coord);
 				display(target, "L'adversaire à loupé son tir : " + coord);
-				game.shotResult(shooter, coord, false);
+				game.shotResult(shooter, coord, -1);
 				return true;
 			}
 		}
@@ -124,7 +130,6 @@ public class GameThread extends Thread{
 				}
 			}while(!shoot(target, shooter, targetedCell));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -1,6 +1,5 @@
 package batailleNavale.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Player {
@@ -18,7 +17,7 @@ public class Player {
 	}
 	
 	/**
-	 * Retourne le HUD des bateaux (nom + PV)
+	 * Retourne le HUD des bateaux du joueur (nom + PV)
 	 * @return boatsHUD
 	 */
 	private String getBoatsHUD() {
@@ -37,7 +36,7 @@ public class Player {
 	}
 	
 	/**
-	 * Retourne une ArrayList des id et références des bateaux non placés.
+	 * Retourne une HashMap des ids et références des bateaux non placés.
 	 * @return unplacedBoats
 	 */
 	public HashMap<Integer, Boat> unplacedBoats() {
@@ -62,14 +61,15 @@ public class Player {
 	
 	
 	/**
-	 * Ajuste le tableau de l'adversaire en fonction du résultat du tir (touché ou loupé)
+	 * Ajuste le tableau de l'adversaire (tableau de tir) en fonction du résultat du tir (touché non coulé = 1, loupé = -1, touché coulé = -2 )
 	 * @param coord
 	 * @param result
 	 */
-	public void shotResult(String coord, boolean result) {
+	public void shotResult(String coord, int result) {
 		int[] shootCoord = Utils.strCoordToIntCoord(coord);
-		if(result) opponentBoard[shootCoord[0]][shootCoord[1]] = 1; // touché
-		else opponentBoard[shootCoord[0]][shootCoord[1]] = -1; //tir loupé
+		if(result == 1) opponentBoard[shootCoord[0]][shootCoord[1]] = 1; // touché non coulé
+		if(result == -1)  opponentBoard[shootCoord[0]][shootCoord[1]] = -1; //tir loupé
+		else opponentBoard[shootCoord[0]][shootCoord[1]] = -2; //touché coulé
 	}
 	
 	/**
@@ -84,7 +84,7 @@ public class Player {
 	
 	
 	/**
-	 * Retourne true si touché et false si loupé. Ajuste le tableau de tir du joueur si touché et décrémente les HP du bateau touché.
+	 * Retourne true si touché, ajuste le tableau du joueur et décrémente les HP du bateau touché. Retoune false si loupé. 
 	 * @param coord
 	 * @return isShot
 	 */
@@ -101,7 +101,25 @@ public class Player {
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Retourne le nom du bateau coulé suite au tir et ajuste le tableau (de placement) du joueur si le navire est coulé. Retourne null sinon. 
+	 * @param coord
+	 * @return isSunk
+	 */
+	public String isSunk(String coord) {
+		
+		//Recherche du bateau touché.
+		for(int i = 0; i < 5; i++) {
+			if(boats[i].isPresent(Utils.strCoordToIntCoord(coord)) && boats[i].getHP() == 0){ // bateau vient d'être coulé
+				for(int j = 0; j < boats[i].getCoord().length;j++) {
+					playerBoard[boats[i].getCoord()[j][0]][boats[i].getCoord()[j][1]] = -2; // bateau devient coulé
+				}
+				return boats[i].getName();
+			}
+		}
+		return null;
+	}
 	/**
 	 * Retourne le tableau de jeu global en string pour le joueur actuel.
 	 * @param isFirstDisplay
@@ -132,12 +150,14 @@ public class Player {
 				if (board[i][j] == 0) // case vide (idem dans les 2 boards)
 					sb.append(". ");
 				else if (board[i][j] == 1) { // case bateau (player) ou case bateau touché (opponent)
-					if(isPlayerBoard) sb.append("B ");
+					if(isPlayerBoard) sb.append("b ");
 					else sb.append("x ");
-				}
-				else { // (= -1) case bateau coulé (player) ou case tir loupé (opponent)
+				}else if (board[i][j] == -1) { // case bateau touché (player) ou case tir loupé (opponent)
 					if(isPlayerBoard) sb.append("x "); 
 					else sb.append("m ");
+				}
+				else { // (= -2) case bateau coulé (idem dans les 2 boards)
+					sb.append("✟ "); 
 				}
 			}
 			sb.append("\n");
