@@ -1,9 +1,7 @@
 package batailleNavale.server;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
 
 public class BoatPlacingThread extends Thread{
 
@@ -11,7 +9,7 @@ public class BoatPlacingThread extends Thread{
 	private PrintWriter out;
 	private Game game;
 	private int player;
-	private int direction;
+	private boolean direction; // true => horizontale, false => verticale
 	private String origin;
 	
 	public BoatPlacingThread(BufferedReader in, PrintWriter out, Game game, int player) {
@@ -34,7 +32,6 @@ public class BoatPlacingThread extends Thread{
 				//Choix du bateau
 				out.println("\nNuméro du bateau : ");
 				String boatIndexStr = in.readLine();
-				
 				while(!Utils.isNumeric(boatIndexStr) || !game.unPlacedBoats(player).containsKey(Integer.parseInt(boatIndexStr))) {	// n'est pas un entier ou le numéro entrée ne correspond pas à un bateau non placé
 					out.println("Entrer un bon numéro : ");
 					boatIndexStr = in.readLine();
@@ -58,6 +55,9 @@ public class BoatPlacingThread extends Thread{
 		}
 	}
 	
+	/**
+	 * Effectue la demande et la validation de la case d'origine et de la direction.
+	 */
 	private void boatPlacing() {
 		try {
 			// Case d'origine
@@ -71,16 +71,12 @@ public class BoatPlacingThread extends Thread{
 			//Direction
 			out.println("Direction (H => horizontal | V => vertical) : ");
 			String directionStr = in.readLine();
-			while(!Utils.isNumeric(directionStr)) {
+			while(!directionStr.equals("H") && !directionStr.equals("V")) { // est différent de H et V
 				out.println("Entrer H (horizontal) ou V (vertical) : ");
 				directionStr = in.readLine();
 			}
-			while(!directionStr.equals("H") && !directionStr.equals("V")) {
-				out.println("Entrer H (horizontal) ou V (vertical) : ");
-				directionStr = in.readLine();
-			}
-			if(directionStr.equals("H")) direction  = 1;
-			else direction = -1; // vertical
+			if(directionStr.equals("H")) direction  = true;
+			else direction = false; // vertical
 			
 		}catch (Exception e) {
 			// TODO: handle exception
@@ -95,7 +91,7 @@ public class BoatPlacingThread extends Thread{
 	 * @param origin
 	 * @return isSet
 	 */
-	private boolean setBoat(int player, int boatIndex, int direction, String origin) {
+	private boolean setBoat(int player, int boatIndex, boolean direction, String origin) {
 		if(game.setPlayerBoat(player, boatIndex, direction, origin)) {
 			out.println("Votre " + game.getP1().getBoats()[boatIndex].getName() + " est placé.") ;
 			return true;

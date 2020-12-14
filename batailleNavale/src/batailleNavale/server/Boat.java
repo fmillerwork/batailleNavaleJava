@@ -63,15 +63,15 @@ public class Boat {
 		return coord;
 	}
 	
-	public void setCoord(int[] origin, int direction, int size) {
+	public void setCoord(int[] origin, boolean direction, int size) {
 		this.coord = new int[size][2];	// [ligneCoord,colonneCoord] | [ligneCoord,colonneCoord] | [ligneCoord,colonneCoord], ....
-		if(direction == 1) { // droite
+		if(direction) { // droite/horizontale
 			for(int i = 0; i < size; i++) {	// pour chaque case
 				this.coord[i][0] = origin[0]; // ligne de la case
 				this.coord[i][1] = origin[1] + i; // colonne de la case
 			}
 		}
-		else { // bas => direction = -1
+		else { // (false) vers le bas / verticale
 			for(int i = 0; i < size; i++) {	// pour chaque case
 				this.coord[i][0] = origin[0] + i; // ligne de la case
 				this.coord[i][1] = origin[1]; // colonne de la case

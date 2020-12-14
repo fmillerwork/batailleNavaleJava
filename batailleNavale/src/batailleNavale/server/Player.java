@@ -3,8 +3,8 @@ package batailleNavale.server;
 import java.util.HashMap;
 
 public class Player {
-	private int[][] playerBoard = new int[10][10]; // tableau de jeu en 10 x 10. ligne x colonne | 0 => case vide | 1 => bateau | -1 => bateau touché
-	private int[][] opponentBoard = new int[10][10]; //ligne x colonne | 0 => case vide | 1 => bateau touché | -1 => tir loupé
+	private int[][] playerBoard = new int[10][10]; // tableau de jeu en 10 x 10. ligne x colonne | 0 => case vide | 1 => bateau non touché | -1 => bateau touché | -2 bateau coulé
+	private int[][] opponentBoard = new int[10][10]; //ligne x colonne | 0 => case vide | 1 => bateau touché | -1 => tir loupé | -2 bateau coulé
 	private Boat[] boats = new Boat[5];
 	
 	public Player() {
@@ -174,7 +174,7 @@ public class Player {
 	 * @param direction (1 => droite, -1 => bas)
 	 * @return IsSet
 	 */
-	public boolean setBoat(int boatIndex, int direction, String originCoord) {
+	public boolean setBoat(int boatIndex, boolean direction, String originCoord) {
 
 		// vérif des données
 		if (!isLocationAvailable(boatIndex, direction, originCoord)) {
@@ -189,7 +189,7 @@ public class Player {
 
 
 	/**
-	 * Retourne true si les coordonnsss du bateau correspondent à des cases vides et existantes
+	 * Retourne true si les coordonnées du bateau correspondent à des cases vides et existantes
 	 * dans la grille (pas de dépacement).
 	 * 
 	 * @param boatIndex
@@ -197,9 +197,9 @@ public class Player {
 	 * @param originCoord
 	 * @return isLocationAvailable
 	 */
-	private boolean isLocationAvailable(int boatIndex, int direction, String originCoord) {
+	private boolean isLocationAvailable(int boatIndex, boolean direction, String originCoord) {
 		int[] originCoordInt = Utils.strCoordToIntCoord(originCoord);
-		if (direction == 1) { // droite
+		if (direction) { // droite/horizontale
 			if(boats[boatIndex].getSize() + originCoordInt[1] > 10) { // si le bateau dépasse la grille
 				return false;}
 			for (int i = originCoordInt[1]; i < boats[boatIndex].getSize() + originCoordInt[1]; i++) {
@@ -207,7 +207,7 @@ public class Player {
 					return false;
 				}
 			}
-		} else { // vers le bas
+		} else { // (false) vers le bas / verticale
 			if(boats[boatIndex].getSize() + originCoordInt[0] > 10)
 				return false;
 			for (int i = originCoordInt[0]; i < boats[boatIndex].getSize() + originCoordInt[0]; i++) {
@@ -226,12 +226,12 @@ public class Player {
 	 * @param originCoord
 	 * @param direction
 	 */
-	private void setBoatForPlayer(int boatIndex, String originCoord, int direction) {
+	private void setBoatForPlayer(int boatIndex, String originCoord, boolean direction) {
 		int[] originCoordInt = Utils.strCoordToIntCoord(originCoord);
-		if (direction == 1) { // droite
+		if (direction) { // droite/horizontale
 			for (int i = originCoordInt[1]; i < boats[boatIndex].getSize() + originCoordInt[1]; i++)
 				playerBoard[originCoordInt[0]][i] = 1;
-		} else { // vers le bas
+		} else { // (false) vers le bas / verticale
 			for (int i = originCoordInt[0]; i < boats[boatIndex].getSize() + originCoordInt[0]; i++)
 				playerBoard[i][originCoordInt[1]] = 1;
 		}

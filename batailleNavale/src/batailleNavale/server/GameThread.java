@@ -42,14 +42,14 @@ public class GameThread extends Thread{
 			
 			// Phase de tir
 			do {	
-				printBoardPlayer(game.getActivePlayer(), false);
+				printBoardPlayer(game.isFirstPlayerActive(), false);
 				
-				if(game.getActivePlayer() == 1) {
+				if(game.isFirstPlayerActive()) {
 					shootingPhase(in1, out1, 1, 2, out2);
-					game.setActivePlayer(2);
+					game.setFirstPlayerActive(false);
 				}else {
 					shootingPhase(in2, out2, 2, 1, out1);
-					game.setActivePlayer(1);
+					game.setFirstPlayerActive(true);
 				}
 			}while(!game.isGameEnded());
 			
@@ -65,8 +65,8 @@ public class GameThread extends Thread{
 	 * Affiche le tableau de jeu global pour le joueur passé en argument.
 	 * @param player
 	 */
-	private void printBoardPlayer(int player, boolean isFirstDisplay) {
-		if(player == 1) {
+	private void printBoardPlayer(boolean isFirstPlayer, boolean isFirstDisplay) {
+		if(isFirstPlayer) {
 			out1.println(game.getPlayersBoards(isFirstDisplay)[0]);
 		}
 		else {
@@ -81,7 +81,7 @@ public class GameThread extends Thread{
 	 * @param coord
 	 * @return isValidShoot
 	 */
-	private boolean shoot(int target, int shooter, String coord) { 
+	private boolean isValidShot(int target, int shooter, String coord) { 
 		if(!Utils.isValidCoord(coord)) { // coordonnée en dehors de la grille de jeu
 			display(shooter, "Veuillez choisir une case existante...");
 			return false;
@@ -128,7 +128,7 @@ public class GameThread extends Thread{
 					shooterOut.println("Cette case n'existe pas ou a déjà été ciblée.... Entrer une nouvelle cible : ");
 					targetedCell = shooterIn.readLine();
 				}
-			}while(!shoot(target, shooter, targetedCell));
+			}while(!isValidShot(target, shooter, targetedCell));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -149,7 +149,7 @@ public class GameThread extends Thread{
 	 * Affiche les textes de fin de partie.
 	 */
 	private void endMessage() {
-		if(game.getActivePlayer() == 1) { // Joueur 2 gagnant
+		if(game.isFirstPlayerActive()) { // Joueur 2 gagnant
 			out1.println("Vous avez perdu ...");
 			out2.println("Vous avez gagné !");
 		}else { // Joueur 1 gagnant

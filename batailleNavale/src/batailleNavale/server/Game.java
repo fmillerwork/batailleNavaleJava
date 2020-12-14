@@ -6,10 +6,9 @@ import java.util.Hashtable;
 public class Game {
 	private Player p1 = new Player();
 	private Player p2 = new Player();
-	private int activePlayer = 1; // 1 => j1 actif | 2 => j2 actif
+	private boolean firstPlayerActive = true; // true => j1 actif | false => j2 actif
 	
 	public Game() {
-		
 	}
 
 
@@ -130,7 +129,7 @@ public class Game {
 	 * @param origin
 	 * @return isSet
 	 */
-	public boolean setPlayerBoat(int player, int boatIndex, int direction, String origin) {
+	public boolean setPlayerBoat(int player, int boatIndex, boolean direction, String origin) {
 		if(player == 1) return p1.setBoat(boatIndex, direction, origin);
 		else return p2.setBoat(boatIndex, direction, origin);
 	}
@@ -166,13 +165,17 @@ public class Game {
 		this.p2 = p2;
 	}
 
-	public int getActivePlayer() {
-		return activePlayer;
+
+	public boolean isFirstPlayerActive() {
+		return firstPlayerActive;
 	}
 
-	public void setActivePlayer(int activePlayer) {
-		this.activePlayer = activePlayer;
+
+	public void setFirstPlayerActive(boolean firstPlayerActive) {
+		this.firstPlayerActive = firstPlayerActive;
 	}
+
+
 
 
 
