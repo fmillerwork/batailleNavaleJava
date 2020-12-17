@@ -61,7 +61,7 @@ public class BoatPlacingThread extends Thread{
 	private void boatPlacing() {
 		try {
 			// Case d'origine
-			out.println("Case d'origine : ");
+			out.println("Case d'origine (Ex : \"A7\"): ");
 			origin = in.readLine();
 			while(!Utils.isValidCoord(origin)) {
 				out.println("Cette case n'existe pas.... Entrer une nouvelle case d'origine : ");

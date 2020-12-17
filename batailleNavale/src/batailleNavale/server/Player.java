@@ -197,12 +197,12 @@ public class Player {
 		if (direction) { // droite/horizontale
 			if(boats[boatIndex].getSize() + originCoordInt[1] > 10) return false; 	// si le bateau dépasse la grille
 			for (int i = originCoordInt[1]; i < boats[boatIndex].getSize() + originCoordInt[1]; i++) {
-				if (placementBoard[originCoordInt[0]][i] != 0 && !isNotAdjacent2Boat(originCoordInt)) return false; // la case est vide
+				if (!isNotAdjacent2Boat(new int[] {originCoordInt[0],i})) return false; // la case est non adjacente à un bateau (pas besoin de vérifier la présence d'un bateau sur la base courante)
 			}
 		} else { // (false) vers le bas / verticale
 			if(boats[boatIndex].getSize() + originCoordInt[0] > 10) return false;	// si le bateau dépasse la grille
 			for (int i = originCoordInt[0]; i < boats[boatIndex].getSize() + originCoordInt[0]; i++) {
-				if (placementBoard[i][originCoordInt[1]] != 0 && !isNotAdjacent2Boat(originCoordInt)) return false; // la case est vide
+				if (!isNotAdjacent2Boat(new int[] {i,originCoordInt[1]})) return false; // la case est non adjacente à un bateau (pas besoin de vérifier la présence d'un bateau sur la base courante)
 			}
 		}
 		return true;
@@ -214,6 +214,31 @@ public class Player {
 	 * @return isAdjacent2Boat
 	 */
 	private boolean isNotAdjacent2Boat(int[] coord) {
+		if(coord[0]-1 < 0) {
+			return placementBoard[coord[0]+1][coord[1]] ==0 &&
+					placementBoard[coord[0]][coord[1]-1] ==0 && 
+					placementBoard[coord[0]][coord[1]+1] ==0 &&
+					placementBoard[coord[0]+1][coord[1]-1] ==0 &&
+					placementBoard[coord[0]+1][coord[1]+1] ==0;
+		}if(coord[0]+1 > 9) {
+			return placementBoard[coord[0]-1][coord[1]] ==0 &&
+					placementBoard[coord[0]][coord[1]-1] ==0 && 
+					placementBoard[coord[0]][coord[1]+1] ==0 &&
+					placementBoard[coord[0]-1][coord[1]-1] ==0 &&
+					placementBoard[coord[0]-1][coord[1]+1] ==0;
+		}if(coord[1]-1 < 0) {
+			return placementBoard[coord[0]-1][coord[1]] ==0 && 
+					placementBoard[coord[0]+1][coord[1]] ==0 &&
+					placementBoard[coord[0]][coord[1]+1] ==0 &&
+					placementBoard[coord[0]-1][coord[1]+1] ==0 &&
+					placementBoard[coord[0]+1][coord[1]+1] ==0;
+		}if(coord[1]+1 > 9) {
+			return placementBoard[coord[0]-1][coord[1]] ==0 && 
+					placementBoard[coord[0]+1][coord[1]] ==0 &&
+					placementBoard[coord[0]][coord[1]-1] ==0 && 
+					placementBoard[coord[0]-1][coord[1]-1] ==0 &&
+					placementBoard[coord[0]+1][coord[1]-1] ==0;
+		}
 		return placementBoard[coord[0]-1][coord[1]] ==0 && 
 				placementBoard[coord[0]+1][coord[1]] ==0 &&
 				placementBoard[coord[0]][coord[1]-1] ==0 && 
@@ -222,6 +247,7 @@ public class Player {
 				placementBoard[coord[0]-1][coord[1]+1] ==0 &&
 				placementBoard[coord[0]+1][coord[1]-1] ==0 &&
 				placementBoard[coord[0]+1][coord[1]+1] ==0;
+		
 	}
 
 	/**
