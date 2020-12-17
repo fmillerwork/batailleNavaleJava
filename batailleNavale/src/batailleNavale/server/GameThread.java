@@ -31,7 +31,7 @@ public class GameThread extends Thread{
 			out1.println("----- Début de la partie -----\nVous êtes le joueur 1");
 			out2.println("----- Début de la partie -----\nVous êtes le joueur 2");
 			
-			// Phase de placement (thread)
+			// Phase de placement (thread pour chaque joueur)
 			BoatPlacingThread bst1 = new BoatPlacingThread(in1, out1, game, 1);
 			BoatPlacingThread bst2 = new BoatPlacingThread(in2, out2, game, 2);
 			bst1.start();
@@ -64,12 +64,8 @@ public class GameThread extends Thread{
 	 * @param player
 	 */
 	private void printBoardPlayer(boolean isFirstPlayer, boolean isFirstDisplay) {
-		if(isFirstPlayer) {
-			out1.println(game.getPlayersBoards(isFirstDisplay)[0]);
-		}
-		else {
-			out2.println(game.getPlayersBoards(isFirstDisplay)[1]);
-		}
+		if(isFirstPlayer) out1.println(game.getPlayersBoards(isFirstDisplay)[0]);
+		else out2.println(game.getPlayersBoards(isFirstDisplay)[1]);
 	}
 	
 	/**
@@ -80,11 +76,11 @@ public class GameThread extends Thread{
 	 * @return isValidShoot
 	 */
 	private boolean isValidShot(int target, int shooter, String coord) { 
-		if(!Utils.isValidCoord(coord)) { // coordonnée en dehors de la grille de jeu
+		if(!Utils.isValidCoord(coord)) { // si coordonnée en dehors de la grille de jeu
 			display(shooter, "Veuillez choisir une case existante...");
 			return false;
 		}
-		else if(!game.checkShoot(shooter, coord)) { // tir invalide (case bateau touché ou case bateau touché)
+		else if(!game.isAlreadyShot(shooter, coord)) { // si tir invalide (case déjà ciblée)
 			display(shooter, "Veuillez choisir une autre case, vous avez déjà tiré sur cette dernière...");
 			return false;
 		}else { // tir valide
@@ -144,30 +140,19 @@ public class GameThread extends Thread{
 	}
 	
 	/**
-	 * Affiche les textes de fin de partie.
+	 * Affiche les textes de fin de partie et envoie l'information de fin de partie au ListeningThread du client..
 	 */
 	private void endMessage() {
 		if(game.isFirstPlayerActive()) { // Joueur 2 gagnant
 			out1.println("Vous avez perdu ...");
 			out2.println("Vous avez gagné !");
-			
-			//Fermeture de la partie
-			gameClose();
 		}else { // Joueur 1 gagnant
 			out1.println("Vous avez gagné !");
 			out2.println("Vous avez perdu ...");
-			
-			//Fermeture de la partie
-			gameClose();
 		}
-	}
-	
-	/**
-	 * Fermeture de la partie
-	 */
-	private void gameClose() {
-		String gameCloseMessage = "Fin de la partie... (Entrer pour quitter l'application)";
-		out1.println(gameCloseMessage);
-		out2.println(gameCloseMessage);
+		
+		//Fermeture de la partie
+		out1.println("end");
+		out2.println("end");
 	}
 }

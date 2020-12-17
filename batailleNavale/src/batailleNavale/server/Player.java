@@ -3,12 +3,11 @@ package batailleNavale.server;
 import java.util.HashMap;
 
 public class Player {
-	private int[][] playerBoard = new int[10][10]; // tableau de jeu en 10 x 10. ligne x colonne | 0 => case vide | 1 => bateau non touché | -1 => bateau touché | -2 bateau coulé
-	private int[][] opponentBoard = new int[10][10]; //ligne x colonne | 0 => case vide | 1 => bateau touché | -1 => tir loupé
+	private int[][] placementBoard = new int[10][10]; // grille de placement en 10 x 10. ligne x colonne | 0 => case vide | 1 => bateau non touché | -1 => bateau touché | -2 bateau coulé
+	private int[][] shootingBoard = new int[10][10]; // grille de tir en 10 x 10. ligne x colonne | 0 => case vide | 1 => bateau touché | -1 => tir loupé
 	private Boat[] boats = new Boat[5];
 	
 	public Player() {
-
 		boats[0] = new Boat("Porte-Avion", 5);
 		boats[1] = new Boat("Cuirasser", 4);
 		boats[2] = new Boat("Sous-marin", 3);
@@ -17,7 +16,7 @@ public class Player {
 	}
 	
 	/**
-	 * Retourne le HUD des bateaux du joueur (nom + PV)
+	 * Retourne le HUD des bateaux en vie du joueur (nom + HP)
 	 * @return boatsHUD
 	 */
 	private String getBoatsHUD() {
@@ -36,7 +35,7 @@ public class Player {
 	}
 	
 	/**
-	 * Retourne une HashMap des ids et références des bateaux non placés.
+	 * Retourne une HashMap<Integer, Boat> des ids et noms des bateaux non placés.
 	 * @return unplacedBoats
 	 */
 	public HashMap<Integer, Boat> unplacedBoats() {
@@ -53,44 +52,43 @@ public class Player {
 	 */
 	public boolean isDefeated() {
 		for(int i = 0; i < 5; i++) {
-			if(boats[i].getHP() != 0) // s'il reste des PV.
-				return false;
+			if(boats[i].getHP() != 0) return false; // s'il reste des HP.
 		}
 		return true;
 	}
 	
 	
 	/**
-	 * Ajuste le tableau de l'adversaire (tableau de tir) en fonction du résultat du tir (touché ou loupé)
+	 * Ajuste la grille de tir en fonction du résultat du tir (touché ou loupé)
 	 * @param coord
 	 * @param isShot
 	 */
 	public void shotResult(String coord, boolean isShot) {
 		int[] shootCoord = Utils.strCoordToIntCoord(coord);
-		if(isShot) opponentBoard[shootCoord[0]][shootCoord[1]] = 1; // touché
-		else  opponentBoard[shootCoord[0]][shootCoord[1]] = -1; //tir loupé
+		if(isShot) shootingBoard[shootCoord[0]][shootCoord[1]] = 1; // touché
+		else  shootingBoard[shootCoord[0]][shootCoord[1]] = -1; //tir loupé
 	}
 	
 	/**
-	 * Retourne true si la coordonnée est valide (case vide) pour un tir.
+	 * Retourne true si la coordonnée est valide (case pas déjà ciblée) pour un tir.
 	 * @param coord
 	 * @return canShoot
 	 */
 	public boolean canShoot(String coord) {
 		int[] shootCoord = Utils.strCoordToIntCoord(coord);
-		return opponentBoard[shootCoord[0]][shootCoord[1]] == 0; // case vide
+		return shootingBoard[shootCoord[0]][shootCoord[1]] == 0; // case vide
 	}
 	
 	
 	/**
-	 * Retourne true si touché, ajuste le tableau du joueur et décrémente les HP du bateau touché. Retoune false si loupé. 
+	 * Retourne true si touché, ajuste la grille de placement et décrémente les HP du bateau touché. Retoune false si loupé. 
 	 * @param coord
 	 * @return isShot
 	 */
 	public boolean isShot(String coord) {
 		int[] shootCoord = Utils.strCoordToIntCoord(coord);
-		if(playerBoard[shootCoord[0]][shootCoord[1]] == 1) { // présence d'un bateau
-			playerBoard[shootCoord[0]][shootCoord[1]] = -1; // bateau devient touché
+		if(placementBoard[shootCoord[0]][shootCoord[1]] == 1) { // présence d'un bateau
+			placementBoard[shootCoord[0]][shootCoord[1]] = -1; // bateau devient touché
 			
 			//Gestion des HP
 			for(int i = 0; i < 5; i++) {
@@ -102,7 +100,7 @@ public class Player {
 	}
 	
 	/**
-	 * Retourne le nom du bateau coulé suite au tir et ajuste le tableau (de placement) du joueur si le navire est coulé. Retourne null sinon. 
+	 * Retourne le nom du bateau coulé suite au tir et ajuste la grille de placement si le navire est coulé. Retourne null sinon. 
 	 * @param coord
 	 * @return isSunk
 	 */
@@ -112,7 +110,7 @@ public class Player {
 		for(int i = 0; i < 5; i++) {
 			if(boats[i].isPresent(Utils.strCoordToIntCoord(coord)) && boats[i].getHP() == 0){ // bateau vient d'être coulé
 				for(int j = 0; j < boats[i].getCoord().length;j++) {
-					playerBoard[boats[i].getCoord()[j][0]][boats[i].getCoord()[j][1]] = -2; // bateau devient coulé
+					placementBoard[boats[i].getCoord()[j][0]][boats[i].getCoord()[j][1]] = -2; // bateau devient coulé
 				}
 				return boats[i].getName();
 			}
@@ -120,7 +118,7 @@ public class Player {
 		return null;
 	}
 	/**
-	 * Retourne le tableau de jeu global en string pour le joueur actuel.
+	 * Retourne le tableau de jeu global (les 2 grilles) en string pour le joueur actuel.
 	 * @param isFirstDisplay
 	 * @return boards
 	 */
@@ -131,20 +129,20 @@ public class Player {
 	
 	
 	/**
-	 * Renvoi le tableau de jeu d'un joueur int[][] sous la forme d'un string.
+	 * Renvoi une grille choisi d'un joueur int[][] sous la forme d'un string.
 	 * 
 	 * @param isPlayerBoard
 	 * @return board
 	 */
 	public String boardToString(boolean isPlayerBoard) {
 		int[][] board;
-		if(isPlayerBoard) board = playerBoard;
-		else board = opponentBoard;
+		if(isPlayerBoard) board = placementBoard;
+		else board = shootingBoard;
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("  1 2 3 4 5 6 7 8 9 10\n");
 		for (int i = 0; i < 10; i++) {
-			sb.append((char)(i + 65) + " ");
+			sb.append((char)(i + 65) + " "); // code ASCII pour A à J
 			for (int j = 0; j < 10; j++) {
 				if (board[i][j] == 0) // case vide (idem dans les 2 boards)
 					sb.append(". ");
@@ -166,7 +164,7 @@ public class Player {
 
 	
 	/**
-	 * Retourne true et place le bateau dans la grille si les arguments sont
+	 * Retourne true et place le bateau dans la grille de placement si les arguments sont
 	 * valides. Retourne false sinon.
 	 * 
 	 * @param boatIndex (0 => PA, 1 => Cuirasser, 2 => Sous-Marin, 3 => Croiseur, 4 => Destoyer)
@@ -176,10 +174,8 @@ public class Player {
 	public boolean setBoat(int boatIndex, boolean direction, String originCoord) {
 
 		// vérif des données
-		if (!isLocationAvailable(boatIndex, direction, originCoord)) {
-			return false;
-
-		} else { // placement des bateaux
+		if (!isLocationAvailable(boatIndex, direction, originCoord)) return false;
+		else { // placement des bateaux
 			setBoatForPlayer(boatIndex, originCoord, direction);
 			boats[boatIndex].setCoord(Utils.strCoordToIntCoord(originCoord), direction, boats[boatIndex].getSize());
 		}
@@ -189,7 +185,7 @@ public class Player {
 
 	/**
 	 * Retourne true si les coordonnées du bateau correspondent à des cases vides et existantes
-	 * dans la grille (pas de dépacement).
+	 * dans la grille de placement.
 	 * 
 	 * @param boatIndex
 	 * @param direction
@@ -199,39 +195,33 @@ public class Player {
 	private boolean isLocationAvailable(int boatIndex, boolean direction, String originCoord) {
 		int[] originCoordInt = Utils.strCoordToIntCoord(originCoord);
 		if (direction) { // droite/horizontale
-			if(boats[boatIndex].getSize() + originCoordInt[1] > 10) { // si le bateau dépasse la grille
-				return false;}
+			if(boats[boatIndex].getSize() + originCoordInt[1] > 10) return false; 	// si le bateau dépasse la grille
 			for (int i = originCoordInt[1]; i < boats[boatIndex].getSize() + originCoordInt[1]; i++) {
-				if (playerBoard[originCoordInt[0]][i] != 0 && !isNotAdjacent2Boat(originCoordInt)) { // la case est vide
-					return false;
-				}
+				if (placementBoard[originCoordInt[0]][i] != 0 && !isNotAdjacent2Boat(originCoordInt)) return false; // la case est vide
 			}
 		} else { // (false) vers le bas / verticale
-			if(boats[boatIndex].getSize() + originCoordInt[0] > 10)
-				return false;
+			if(boats[boatIndex].getSize() + originCoordInt[0] > 10) return false;	// si le bateau dépasse la grille
 			for (int i = originCoordInt[0]; i < boats[boatIndex].getSize() + originCoordInt[0]; i++) {
-				if (playerBoard[i][originCoordInt[1]] != 0 && !isNotAdjacent2Boat(originCoordInt)) {
-					return false;
-				}
+				if (placementBoard[i][originCoordInt[1]] != 0 && !isNotAdjacent2Boat(originCoordInt)) return false; // la case est vide
 			}
 		}
 		return true;
 	}
 	
 	/**
-	 * Retourne true si la celulle en paramètre n'est adjacente à aucun autre bateau (dans les 8 cases autour).
+	 * Retourne true si la celulle en paramètre n'est pas adjacente à un autre bateau (en diagonal aussi).
 	 * @param coord
 	 * @return isAdjacent2Boat
 	 */
 	private boolean isNotAdjacent2Boat(int[] coord) {
-		return playerBoard[coord[0]-1][coord[1]] ==0 && 
-				playerBoard[coord[0]+1][coord[1]] ==0 &&
-				playerBoard[coord[0]][coord[1]-1] ==0 && 
-				playerBoard[coord[0]][coord[1]+1] ==0 &&
-				playerBoard[coord[0]-1][coord[1]-1] ==0 &&
-				playerBoard[coord[0]-1][coord[1]+1] ==0 &&
-				playerBoard[coord[0]+1][coord[1]-1] ==0 &&
-				playerBoard[coord[0]+1][coord[1]+1] ==0;
+		return placementBoard[coord[0]-1][coord[1]] ==0 && 
+				placementBoard[coord[0]+1][coord[1]] ==0 &&
+				placementBoard[coord[0]][coord[1]-1] ==0 && 
+				placementBoard[coord[0]][coord[1]+1] ==0 &&
+				placementBoard[coord[0]-1][coord[1]-1] ==0 &&
+				placementBoard[coord[0]-1][coord[1]+1] ==0 &&
+				placementBoard[coord[0]+1][coord[1]-1] ==0 &&
+				placementBoard[coord[0]+1][coord[1]+1] ==0;
 	}
 
 	/**
@@ -244,11 +234,10 @@ public class Player {
 	private void setBoatForPlayer(int boatIndex, String originCoord, boolean direction) {
 		int[] originCoordInt = Utils.strCoordToIntCoord(originCoord);
 		if (direction) { // droite/horizontale
-			for (int i = originCoordInt[1]; i < boats[boatIndex].getSize() + originCoordInt[1]; i++)
-				playerBoard[originCoordInt[0]][i] = 1;
+			for (int i = originCoordInt[1]; i < boats[boatIndex].getSize() + originCoordInt[1]; i++) placementBoard[originCoordInt[0]][i] = 1;
+			
 		} else { // (false) vers le bas / verticale
-			for (int i = originCoordInt[0]; i < boats[boatIndex].getSize() + originCoordInt[0]; i++)
-				playerBoard[i][originCoordInt[1]] = 1;
+			for (int i = originCoordInt[0]; i < boats[boatIndex].getSize() + originCoordInt[0]; i++) placementBoard[i][originCoordInt[1]] = 1;		
 		}
 	}
 

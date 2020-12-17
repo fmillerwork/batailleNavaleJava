@@ -16,10 +16,12 @@ public class ListeningThread extends Thread{
 		try {
 			while (true) {
 				String serverMessage = in.readLine();
+				if(serverMessage.equals("end"))
+					break; // fermeture du thread si réception du message de fin de partie
 				System.out.println(serverMessage);
-				if(serverMessage.equals("Fin de la partie... (Entrer pour quitter l'application)"))
-					break; // fermeture du thread
 			}
+			System.out.println("Fin de la partie... (Appuyer sur Entrer pour quitter l'application)");
+			
 		}catch (IOException e) {
 			System.out.println("Connexion au serveur interrompue...");
 		}

@@ -24,7 +24,7 @@ public class Game {
 	}
 
 	/**
-	 * Renvoie true si la partie est terminée.
+	 * Renvoie true si la partie est terminée. False sinon.
 	 * @return isGameEnded
 	 */
 	public boolean isGameEnded() {
@@ -32,37 +32,29 @@ public class Game {
 	}
 	
 	/**
-	 * Retourne true et actualise la grille du joueur target si ce dernier est touché suivant la coordonnée en paramètre.
+	 * Retourne true et actualise la grille de placedment du joueur target si ce dernier est touché suivant la coordonnée en paramètre.
 	 * @param target
 	 * @param coord
 	 * @return isShot
 	 */
 	public boolean isShot(int target, String coord) {
-		if(target == 1) {
-			return isTargetShot(p1, p2, coord);
-		}
-		else { // joueur 2 ciblé
-			return isTargetShot(p2, p1, coord);
-		}
+		if(target == 1) return isTargetShot(p1, p2, coord);
+		else return isTargetShot(p2, p1, coord); // joueur 2 ciblé
 	}
 	
 	/**
-	 * Retourne le nom du navire si ce dernier est coulé et actualise la grille du joueur target. Retourne null sinon.
+	 * Retourne le nom du navire si ce dernier est coulé et actualise la grille de placement du joueur target. Retourne null sinon.
 	 * @param target
 	 * @param coord
 	 * @return isSunk
 	 */
 	public String isSunk(int target, String coord) {
-		if(target == 1) {
-			return isTargetSunk(p1, p2, coord);
-		}
-		else { // joueur 2 ciblé
-			return isTargetSunk(p2, p1, coord);
-		}
+		if(target == 1) return isTargetSunk(p1, p2, coord);
+		else return isTargetSunk(p2, p1, coord); // joueur 2 ciblé
 	}
 	
 	/**
-	 * Retourne true si la joueur cible à touché le joueur target. Retourne false sinon. 
+	 * Sous méthode de isShot() de la classe Game.
 	 * @param target
 	 * @param shooter
 	 * @param coord
@@ -79,7 +71,7 @@ public class Game {
 	}
 
 	/**
-	 * Retourne le nom du navire coulé et actualise la grille si le joueur cible à coulé le navire du joueur target. Retourne null sinon. 
+	 * Sous méthode de isSunk() de la classe Game.
 	 * @param target
 	 * @param shooter
 	 * @param coord
@@ -87,25 +79,22 @@ public class Game {
 	 */
 	private String isTargetSunk(Player target, Player shooter, String coord) {
 		String sunkBoatName = target.isSunk(coord);
-		if(sunkBoatName != null) { // coulé
-			return sunkBoatName;
-		}else { // non coulé
-			return null;
-		}
+		if(sunkBoatName != null) return sunkBoatName; // coulé
+		else return null; // non coulé
 	}
 	/**
-	 * Retourne true si la coordonnée est valide (case vide) pour joueur tireur en paramètre
+	 * Retourne true si la coordonnée est valide (case pas déjà ciblée) pour joueur tireur en paramètre
 	 * @param player
 	 * @param coord
 	 * @return canShoot
 	 */
-	public boolean checkShoot(int shooter, String coord) {
+	public boolean isAlreadyShot(int shooter, String coord) {
 		if(shooter == 1) return p1.canShoot(coord);
 		else return p2.canShoot(coord);
 	}
 	
 	/**
-	 * Retourne le tableau de jeu global de chaque joueur.
+	 * Retourne les 2 grilles de chaque joueur.
 	 * @param isFirstDisplay
 	 * @return boards[]
 	 */
@@ -114,7 +103,7 @@ public class Game {
 	}
 	
 	/**
-	 * Retourne le tableau personnel de chaque joueur.
+	 * Retourne la grille de placement de chaque joueur.
 	 * @return personalBoards
 	 */
 	public String[] getPersonalBoards() {
@@ -135,17 +124,13 @@ public class Game {
 	}
 	
 	/**
-	 * Retourne une ArrayList des id et noms des bateaux non placés pour le joueur en paramètre.
+	 * Retourne une HashMap<Integer, Boat> des id et noms des bateaux non placés pour le joueur en paramètre.
 	 * @return unPlacedBoats
 	 */
 	public HashMap<Integer, Boat> unPlacedBoats(int player) {
 		if(player == 1) return p1.unplacedBoats();
 		else return p2.unplacedBoats();
 	}
-	
-	
-	
-	
 	
 	
 	
